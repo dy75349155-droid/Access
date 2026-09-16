@@ -1,4 +1,4 @@
-Website Acces Payment 
+Website Access Payment 
 <!DOCTYPE html>
 <html lang="en" class="h-full">
 <head>
@@ -50,8 +50,7 @@ Website Acces Payment
             <!-- Action Buttons -->
             <div class="space-y-3">
                 <button id="simulate-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 transition duration-200 flex items-center justify-center space-x-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                    <span>Start 30 Days Pass</span>
+                    <span id="simulate-btn-text">Start 30 Days Pass</span>
                 </button>
 
                 <!-- Conditional Open Button -->
@@ -94,6 +93,7 @@ Website Acces Payment
 
     <script>
         const simulateBtn = document.getElementById('simulate-btn');
+        const simulateBtnText = document.getElementById('simulate-btn-text');
         const openBtn = document.getElementById('open-btn');
         const openBtnText = document.getElementById('open-btn-text');
         const successModal = document.getElementById('success-modal');
@@ -118,6 +118,11 @@ Website Acces Payment
                     activePassBanner.classList.add('flex');
                     updateCountdownDisplay(timeLeft);
                     
+                    // Update Payment Button to Payment verified ✓ (without leading icon)
+                    simulateBtnText.innerText = 'Payment verified ✓';
+                    simulateBtn.classList.remove('from-emerald-600', 'to-teal-600', 'hover:from-emerald-500', 'hover:to-teal-500');
+                    simulateBtn.classList.add('bg-slate-800', 'text-emerald-400', 'border', 'border-emerald-500/30', 'cursor-default');
+
                     // Enable Open Button
                     openBtn.disabled = false;
                     openBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -139,6 +144,10 @@ Website Acces Payment
             openBtn.classList.add('opacity-50', 'cursor-not-allowed');
             openBtn.classList.remove('bg-gradient-to-r', 'from-indigo-600', 'to-violet-600', 'hover:from-indigo-500', 'hover:to-violet-500', 'text-white', 'shadow-lg', 'shadow-indigo-900/20');
             openBtnText.innerText = 'Open Stream (Pass Inactive)';
+            
+            simulateBtnText.innerText = 'Start 30 Days Pass';
+            simulateBtn.classList.remove('bg-slate-800', 'text-emerald-400', 'border', 'border-emerald-500/30', 'cursor-default');
+            simulateBtn.classList.add('from-emerald-600', 'to-teal-600', 'hover:from-emerald-500', 'hover:to-teal-500');
         }
 
         function updateCountdownDisplay(ms) {
@@ -167,13 +176,13 @@ Website Acces Payment
         }, 1000);
 
         simulateBtn.addEventListener('click', () => {
+            if (localStorage.getItem('paywall_pass_expiry')) return; // Already active
+
             // Set 30 Days Expiry from now (30 * 24 * 60 * 60 * 1000 ms)
             const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
             const expiryTimestamp = new Date().getTime() + thirtyDaysMs;
             
-            if (!localStorage.getItem('paywall_pass_expiry')) {
-                localStorage.setItem('paywall_pass_expiry', expiryTimestamp);
-            }
+            localStorage.setItem('paywall_pass_expiry', expiryTimestamp);
 
             // Show modal verification message briefly
             successModal.classList.remove('hidden');
@@ -183,7 +192,7 @@ Website Acces Payment
                 progressBar.style.width = '100%';
             }, 100);
 
-            // Hide modal after 1.5 seconds and update UI instead of redirecting
+            // Hide modal after 1.5 seconds and update UI
             setTimeout(() => {
                 successModal.classList.remove('flex');
                 successModal.classList.add('hidden');
