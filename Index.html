@@ -1,0 +1,211 @@
+```html
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Access Gateway - ₹1989 (30 Days Pass)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600,700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <header class="w-full py-4 px-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 backdrop-blur">
+        <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="font-semibold tracking-wide text-sm text-slate-300">Secure 30-Day Pass Gateway</span>
+        </div>
+        <div class="text-xs text-slate-400 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
+            ID: <span id="gateway-session">SECURE-8921</span>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden p-6 md:p-8 space-y-6 relative">
+            
+            <!-- Amount Banner -->
+            <div class="text-center space-y-2">
+                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+                    30-Day Instant Access Pass
+                </span>
+                <h1 class="text-3xl font-bold tracking-tight text-white">₹1,989</h1>
+                <p class="text-sm text-slate-400">Scan QR code to unlock 30 days of continuous access</p>
+            </div>
+
+            <!-- QR Code Box using User's Screenshot -->
+            <div class="bg-white p-4 rounded-xl flex flex-col items-center justify-center space-y-3 shadow-inner relative group">
+                <img src="Screenshot_20260916-161703.png" alt="UPI QR Code" id="upi-qr" class="w-48 h-48 rounded-lg object-contain bg-white">
+                <div class="text-center">
+                    <p class="text-xs font-medium text-slate-600">Scan via Google Pay / PhonePe / Paytm</p>
+                    <p class="text-[10px] text-slate-500">Starts 30-day countdown instantly upon verification</p>
+                </div>
+            </div>
+
+            <!-- Hidden target URL configuration -->
+            <input type="hidden" id="target-url" value="https://cloud.caster.fm/login">
+
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button id="simulate-btn" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-medium py-3 px-4 rounded-xl shadow-lg shadow-emerald-900/20 transition duration-200 flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    <span>Start 30 Days Pass</span>
+                </button>
+
+                <!-- Conditional Open Button -->
+                <button id="open-btn" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-3 px-4 rounded-xl border border-slate-700 transition duration-200 flex items-center justify-center space-x-2 opacity-50 cursor-not-allowed" disabled>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    <span id="open-btn-text">Open Stream (Pass Inactive)</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Success Modal Overlay -->
+    <div id="success-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl max-w-sm w-full text-center space-y-4 shadow-2xl animate-fade-in">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <h2 class="text-xl font-bold text-white">Payment Verified!</h2>
+            <p class="text-sm text-slate-400">30 Days Pass activated successfully.</p>
+            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div id="progress-bar" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Pass Status Floating Bar -->
+    <div id="active-pass-banner" class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 bg-slate-900 border border-emerald-500/40 px-4 py-3 rounded-xl shadow-2xl z-40 flex items-center space-x-4 max-w-sm w-full mx-auto">
+        <div class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></div>
+        <div class="flex-grow">
+            <p class="text-xs font-semibold text-emerald-400">30-Day Pass Active</p>
+            <p id="countdown-text" class="text-[11px] text-slate-300 font-mono">Calculations in progress...</p>
+        </div>
+        <button id="reset-pass-btn" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-400 px-2 py-1 rounded border border-slate-700">Reset</button>
+    </div>
+
+    <footer class="py-4 text-center text-xs text-slate-500 border-t border-slate-900">
+        Secured Paywall Protection &bull; 30-Day Subscription Timer Active
+    </footer>
+
+    <script>
+        const simulateBtn = document.getElementById('simulate-btn');
+        const openBtn = document.getElementById('open-btn');
+        const openBtnText = document.getElementById('open-btn-text');
+        const successModal = document.getElementById('success-modal');
+        const progressBar = document.getElementById('progress-bar');
+        const targetUrlInput = document.getElementById('target-url');
+        const activePassBanner = document.getElementById('active-pass-banner');
+        const countdownText = document.getElementById('countdown-text');
+        const resetPassBtn = document.getElementById('reset-pass-btn');
+
+        const redirectUrl = targetUrlInput.value.trim() || 'https://cloud.caster.fm/login';
+
+        // Check existing subscription status in localStorage
+        function checkSubscription() {
+            const expiryTime = localStorage.getItem('paywall_pass_expiry');
+            if (expiryTime) {
+                const now = new Date().getTime();
+                const timeLeft = parseInt(expiryTime) - now;
+
+                if (timeLeft > 0) {
+                    // Pass is active, show banner and enable open button
+                    activePassBanner.classList.remove('hidden');
+                    activePassBanner.classList.add('flex');
+                    updateCountdownDisplay(timeLeft);
+                    
+                    // Enable Open Button
+                    openBtn.disabled = false;
+                    openBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    openBtn.classList.add('bg-gradient-to-r', 'from-indigo-600', 'to-violet-600', 'hover:from-indigo-500', 'hover:to-violet-500', 'text-white', 'shadow-lg', 'shadow-indigo-900/20');
+                    openBtnText.innerText = 'Open Stream Dashboard';
+                } else {
+                    // Expired
+                    localStorage.removeItem('paywall_pass_expiry');
+                    activePassBanner.classList.add('hidden');
+                    disableOpenButton();
+                }
+            } else {
+                disableOpenButton();
+            }
+        }
+
+        function disableOpenButton() {
+            openBtn.disabled = true;
+            openBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            openBtn.classList.remove('bg-gradient-to-r', 'from-indigo-600', 'to-violet-600', 'hover:from-indigo-500', 'hover:to-violet-500', 'text-white', 'shadow-lg', 'shadow-indigo-900/20');
+            openBtnText.innerText = 'Open Stream (Pass Inactive)';
+        }
+
+        function updateCountdownDisplay(ms) {
+            const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((ms % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((ms % (1000 * 60)) / 1000);
+
+            countdownText.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s remaining`;
+        }
+
+        // Run check on load
+        checkSubscription();
+        
+        // Update countdown every second if active
+        setInterval(() => {
+            const expiryTime = localStorage.getItem('paywall_pass_expiry');
+            if (expiryTime) {
+                const timeLeft = parseInt(expiryTime) - new Date().getTime();
+                if (timeLeft > 0) {
+                    updateCountdownDisplay(timeLeft);
+                } else {
+                    checkSubscription();
+                }
+            }
+        }, 1000);
+
+        simulateBtn.addEventListener('click', () => {
+            // Set 30 Days Expiry from now (30 * 24 * 60 * 60 * 1000 ms)
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+            const expiryTimestamp = new Date().getTime() + thirtyDaysMs;
+            
+            if (!localStorage.getItem('paywall_pass_expiry')) {
+                localStorage.setItem('paywall_pass_expiry', expiryTimestamp);
+            }
+
+            // Show modal verification message briefly
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
+            
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+            }, 100);
+
+            // Hide modal after 1.5 seconds and update UI instead of redirecting
+            setTimeout(() => {
+                successModal.classList.remove('flex');
+                successModal.classList.add('hidden');
+                checkSubscription();
+            }, 1500);
+        });
+
+        // Open button action
+        openBtn.addEventListener('click', () => {
+            if (!openBtn.disabled) {
+                window.location.href = redirectUrl;
+            }
+        });
+
+        // Reset button for testing purposes
+        resetPassBtn.addEventListener('click', () => {
+            localStorage.removeItem('paywall_pass_expiry');
+            activePassBanner.classList.add('hidden');
+            disableOpenButton();
+            console.log('Pass reset successfully.');
+        });
+    </script>
+</body>
+</html>
+```
