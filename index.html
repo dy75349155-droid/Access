@@ -32,13 +32,13 @@ Website Access Payment
                     30-Day Instant Access Pass
                 </span>
                 <h1 class="text-3xl font-bold tracking-tight text-white">₹1,989</h1>
-                <p class="text-sm text-slate-400">Scan QR code to unlock 30 days of continuous access</p>
+                <p id="instruction-subtext" class="text-sm text-slate-400">Scan QR code to unlock 30 days of continuous access</p>
             </div>
 
-            <!-- QR Code Box using User's Screenshot -->
-            <div class="bg-white p-4 rounded-xl flex flex-col items-center justify-center space-y-3 shadow-inner relative group">
-                <img src="Screenshot_20260916-161703.png" alt="UPI QR Code" id="upi-qr" class="w-48 h-48 rounded-lg object-contain bg-white">
-                <div class="text-center">
+            <!-- QR Code Box / Post-Payment Image Container -->
+            <div id="media-container" class="bg-white p-4 rounded-xl flex flex-col items-center justify-center space-y-3 shadow-inner relative group">
+                <img src="Screenshot_20260916-161703.png" alt="UPI QR Code" id="dynamic-media" class="w-48 h-48 rounded-lg object-contain bg-white">
+                <div id="media-caption" class="text-center">
                     <p class="text-xs font-medium text-slate-600">Scan via Google Pay / PhonePe / Paytm</p>
                     <p class="text-[10px] text-slate-500">Starts 30-day countdown instantly upon verification</p>
                 </div>
@@ -102,6 +102,9 @@ Website Access Payment
         const activePassBanner = document.getElementById('active-pass-banner');
         const countdownText = document.getElementById('countdown-text');
         const resetPassBtn = document.getElementById('reset-pass-btn');
+        const dynamicMedia = document.getElementById('dynamic-media');
+        const mediaCaption = document.getElementById('media-caption');
+        const instructionSubtext = document.getElementById('instruction-subtext');
 
         const redirectUrl = targetUrlInput.value.trim() || 'https://cloud.caster.fm/login';
 
@@ -118,10 +121,16 @@ Website Access Payment
                     activePassBanner.classList.add('flex');
                     updateCountdownDisplay(timeLeft);
                     
-                    // Update Payment Button to Payment verified ✓ (without leading icon)
+                    // Update Payment Button to Payment verified ✓
                     simulateBtnText.innerText = 'Payment verified ✓';
                     simulateBtn.classList.remove('from-emerald-600', 'to-teal-600', 'hover:from-emerald-500', 'hover:to-teal-500');
                     simulateBtn.classList.add('bg-slate-800', 'text-emerald-400', 'border', 'border-emerald-500/30', 'cursor-default');
+
+                    // Replace QR code image with the requested fm logo/photo
+                    dynamicMedia.src = '1000031081.png';
+                    dynamicMedia.alt = 'Access Granted Image';
+                    mediaCaption.innerHTML = '<p class="text-xs font-medium text-emerald-600">30 Days Access Active</p><p class="text-[10px] text-slate-500">You can now open your stream dashboard below</p>';
+                    instructionSubtext.innerText = 'Your subscription is successfully verified';
 
                     // Enable Open Button
                     openBtn.disabled = false;
@@ -148,6 +157,12 @@ Website Access Payment
             simulateBtnText.innerText = 'Start 30 Days Pass';
             simulateBtn.classList.remove('bg-slate-800', 'text-emerald-400', 'border', 'border-emerald-500/30', 'cursor-default');
             simulateBtn.classList.add('from-emerald-600', 'to-teal-600', 'hover:from-emerald-500', 'hover:to-teal-500');
+
+            // Reset QR Image
+            dynamicMedia.src = 'Screenshot_20260916-161703.png';
+            dynamicMedia.alt = 'UPI QR Code';
+            mediaCaption.innerHTML = '<p class="text-xs font-medium text-slate-600">Scan via Google Pay / PhonePe / Paytm</p><p class="text-[10px] text-slate-500">Starts 30-day countdown instantly upon verification</p>';
+            instructionSubtext.innerText = 'Scan QR code to unlock 30 days of continuous access';
         }
 
         function updateCountdownDisplay(ms) {
